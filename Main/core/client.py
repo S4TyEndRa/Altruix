@@ -778,6 +778,7 @@ class AltruixClient:
                     self.CLIST[cmd] += f"\n<b>Args :</b> \n"
                     user_args: dict = cmds.get("user_args")
                     for arg in user_args:
+                        arg_ = arg
                         if not arg.startswith("-"):
                             arg_ = f"-{arg}"
                         self.CLIST[cmd] += f">> <code>{arg_}: {user_args[arg]}</code>\n"

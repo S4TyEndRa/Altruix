@@ -51,7 +51,7 @@ class BaseConfig(object):
     DEFAULT_PM_TEXT = """<b>Altruix's PM BOT</b>
 <i>Hello, {mention}. Welcome to {mymention}'s PM. Please State your concern and wait for him to respond.</i>
 
-<i>You currently <code>{warns}/{maxvars}</code> Warnings. If you end up exceeding warn limit you will be directly blocked until further notice!</i>
+<i>You currently <code>{warns}/{max_warns}</code> Warnings. If you end up exceeding warn limit you will be directly blocked until further notice!</i>
 """
     APPROVED_DICT: dict = {}
     CUSTOM_PM_TEXT: dict = {}

@@ -82,7 +82,7 @@ async def gban(c: Client, m: Message):
 
 
 @Altruix.register_on_cmd(
-    ["ungban"], cmd_help={"help": "To globally ban a user", "example": "gban <userid>"}
+    ["ungban"], cmd_help={"help": "To globally unban a user", "example": "ungban <userid>"}
 )
 async def ungban(c: Client, m: Message):
     msg = await m.handle_message("PROCESSING")

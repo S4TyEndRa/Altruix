@@ -40,11 +40,11 @@ async def userinfo(c: Client, m: Message):
     elif m.user_input:
         user = m.text.split(" ", 1)[1]
     else:
-        return await msg.edit("INVALID_USER")
+        return await msg.edit_msg("INVALID_USER")
     try:
         ui = await c.get_users(user)
     except Exception as e:
-        return await msg.edit("INVALID_USER_ERROR", string_args=(e))
+        return await msg.edit_msg("INVALID_USER_ERROR", string_args=(e))
     ui_text = [
         f"{b3} <b>User-info of <i>“{ui.mention}”</i> :</b>\n\n",
         f"  {b1} <b>Firstname : <i>{ui.first_name}</i></b>\n",

@@ -33,6 +33,8 @@ def inline_check(func):
 def check_perm(perm_type, return_perm=False):
     def check_perm_s(func):
         async def perm_check(client, m):
+            if m.chat.type == 'private':
+                return await func(client, m)
             if isinstance(perm_type, list):
                 s = {}
                 for i in perm_type:

@@ -59,6 +59,7 @@ class BaseConfig(object):
 """
     APPROVED_DICT: dict = {}
     CUSTOM_PM_TEXT: dict = {}
+    UPDATE_ON_STARTUP = False if getenv('UPDATE_ON_STARTUP', 'yes').lower() in ['n', 'nope', 'false'] else True
     CUSTOM_PM_MEDIA: dict = {}
     PM_WARNS_DICT: dict = {}
     DB_NAME = "mongo"

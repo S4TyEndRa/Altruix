@@ -9,7 +9,6 @@
 import contextlib
 from git import *
 from git.exc import *
-from Main import Altruix
 from .file_helpers import run_in_exc
 
 
@@ -57,14 +56,18 @@ class Updater:
         ups_rem.fetch(self.branch)
         return ups_rem
 
-    async def update_locally(self, ups_rem, repo, msg):
-        await msg.edit_msg("UPDATING_LOCALLY")
+    async def update_locally(self, ups_rem, repo, msg=None, Altruix=None, no_restart=False):
+        if not Altruix:
+            from Main import Altruix
+        if msg:
+            await msg.edit_msg("UPDATING_LOCALLY")
         try:
             ups_rem.pull(self.branch)
         except GitCommandError:
             repo.git.reset("--hard", "FETCH_HEAD")
-        await Altruix.run_cmd_async("pip3 install --no-cache-dir -r requirements.txt")
-        await Altruix._restart(soft=False, last_msg=msg, power_hard=True)
+        if not no_restart:
+            await Altruix.run_cmd_async("pip3 install --no-cache-dir -r requirements.txt")
+            await Altruix._restart(soft=False, last_msg=msg, power_hard=True)
 
     async def update_remotely_heroku(self, ups_rem, repo, msg):
         await msg.edit_msg("HARD_UPDATE_IN_PROGRESS")

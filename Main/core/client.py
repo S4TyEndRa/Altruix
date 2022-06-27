@@ -6,6 +6,8 @@
 #
 # All rights reserved.
 
+import contextlib
+from ..utils._updater import Updater
 import os
 import sys
 import glob
@@ -137,6 +139,8 @@ class AltruixClient:
             dns.resolver.default_resolver.nameservers = ["8.8.8.8"]
 
     async def _db_setup(self):
+        with contextlib.suppress(Exception):
+            await self.update_on_startup()
         await self.resolve_dns()
         self.db = MongoDB(self.config.DB_URI)
         self.log("Initialized Mongo successfully!")
@@ -221,8 +225,14 @@ class AltruixClient:
                 bot_mode_unsupported=bot_mode_unsupported,
             )
             return wrapper
-
         return decorator
+    
+    async def update_on_startup(self):
+        if self.config.UPDATE_ON_STARTUP:
+            updater_ = Updater(repo=self.config.REPO, branch="main", app_url=self.app_url_)
+            repo = await updater_.init_repo()
+            up_rem = await updater_.create_remote_and_fetch(repo)
+            await updater_.update_locally(up_rem, repo, None, self, True)
 
     async def install_apm_from_file(self):
         if os.path.exists("apm_req.txt"):
@@ -402,7 +412,7 @@ class AltruixClient:
                     "pm_only": pm_only,
                 }
             ]
-        else:
+        elif cmd not in [x.get('cmd', '_') for x in self.cmd_list[file_name]]:
             self.cmd_list[file_name].append(
                 {
                     "cmd": cmd,
@@ -760,8 +770,6 @@ class AltruixClient:
             if os.path.lexists("Main/plugins/external"):
                 await self.load_from_directory("Main/plugins/externals/*.py", log=True)
             self.log("All plugins have been loaded.")
-            if self.CLIST:
-                self.CLIST.clear()
             self.prepare_help()
         print("\n")
 

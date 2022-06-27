@@ -16,7 +16,6 @@ from Main.plugins.userbot.channel_utils import digit_wrap
 
 
 gban_db = Altruix.db.make_collection("Gbans")
-GBAN_CACHE = []
 USER_CHAT_CACHE = []
 
 
@@ -49,36 +48,26 @@ async def gban(c: Client, m: Message):
     await gban_db.insert_one(
         {"user_id": int(user_id), "reason": reason, "client_id": my_id}
     )
-    if "-mgban" in m.user_args:
-        if "--no-cache" not in m.user_args:
-            chats = USER_CHAT_CACHE or await c.fetch_chats()
-        else:
-            chats = await c.fetch_chats()
-        if len(chats) == 0:
-            return await msg.edit_msg("NOT_ADMIN_IN_ANY_CHAT", user_mention)
-        err = 0
-        for chat in chats:
-            try:
-                await c.ban_chat_member(chat, int(user_id))
-            except Exception:
-                err += 1
-        await msg.edit_msg(
+    if "--no-cache" not in m.user_args:
+        chats = USER_CHAT_CACHE or await c.fetch_chats()
+    else:
+        chats = await c.fetch_chats()
+    if len(chats) == 0:
+        return await msg.edit_msg("NOT_ADMIN_IN_ANY_CHAT", user_mention)
+    err = 0
+    for chat in chats:
+        try:
+            await c.ban_chat_member(chat, int(user_id))
+        except Exception:
+            err += 1
+    await msg.edit_msg(
             "GBANNED",
             string_args=(
                 user_mention,
                 (len(chats) - err),
-                round(start_time - time.time(), 2),
+                round(time.time() - start_time, 2),
             ),
         )
-    else:
-        await msg.edit_msg(
-            "GBANNED_SIMPLE",
-            string_args=(user_mention, round(start_time - time.time(), 2)),
-        )
-    if GBAN_CACHE:
-        GBAN_CACHE.clear()
-    GBAN_CACHE.extend(gbanned_users)
-    GBAN_CACHE.append(user_id)
 
 
 @Altruix.register_on_cmd(
@@ -104,33 +93,35 @@ async def ungban(c: Client, m: Message):
     if not check:
         return await msg.edit_msg("USER_NOT_GBANNED")
     await gban_db.delete_one({"user_id": int(user_id), "client_id": my_id})
-    if "-mungban" in m.user_args:
-        if "--no-cache" not in m.user_args:
-            chats = USER_CHAT_CACHE or await c.fetch_chats()
-        else:
-            chats = await c.fetch_chats()
-        if len(chats) == 0:
-            return await msg.edit_msg("NOT_ADMIN_IN_ANY_CHAT", user_mention)
-        err = 0
-        for chat in chats:
-            try:
-                await c.unban_chat_member(chat, int(user_id))
-            except Exception:
-                err += 1
-        await msg.edit_msg(
+    if "--no-cache" not in m.user_args:
+        chats = USER_CHAT_CACHE or await c.fetch_chats()
+    else:
+        chats = await c.fetch_chats()
+    if len(chats) == 0:
+        return await msg.edit_msg("NOT_ADMIN_IN_ANY_CHAT", user_mention)
+    err = 0
+    for chat in chats:
+        try:
+            await c.unban_chat_member(chat, int(user_id))
+        except Exception:
+            err += 1
+    await msg.edit_msg(
             "UNGBANNED",
             string_args=(user_mention, err, len(chats), (len(chats) - err)),
         )
-    else:
-        await msg.edit_msg("UNGBANNED_SIMPLE", string_args=(user_mention))
-    if GBAN_CACHE and user_id in GBAN_CACHE:
-        GBAN_CACHE.remove(user_id)
 
+GBANNED_CACHE = {}
 
 async def check_gbanned(user_, my_id):
+    if GBANNED_CACHE.get(my_id) and user_ in GBANNED_CACHE.get(my_id):
+        return True
     _checks_ = await gban_db.find_one({"user_id": user_, "client_id": my_id})
+    check_result = bool(_checks_)
+    if check_result:
+        if my_id not in GBANNED_CACHE:
+            GBANNED_CACHE[my_id] = []
+        GBANNED_CACHE[my_id].append(user_)
     return bool(_checks_)
-
 
 def is_gbanned(func):
     @wraps(func)
@@ -138,16 +129,10 @@ def is_gbanned(func):
         my_id = c.myself.id
         if m and m.from_user and m.from_user.id:
             user_ = int(m.from_user.id)
-            if Altruix.is_rson and (
-                user_ in GBAN_CACHE or await check_gbanned(user_, my_id)
-            ):
-                return True
-            if await gban_db.find_one({"user_id": user_, "client_id": my_id}):
-                return True
+            if await check_gbanned(user_, my_id):
+                return await func(c, m)
         return False
-
     return is_g_banned
-
 
 @Altruix.on_message((filters.group | filters.channel) & ~filters.private, group=2)
 @is_gbanned
@@ -159,9 +144,9 @@ async def gwatch_(c: Client, m: Message):
         return Altruix.log(
             f"ERROR : Unable to kick gbanned user! \nError : [{e}]", level=logging.DEBUG
         )
-    if await Altruix.config.get_env("ENABLE_GLOGS") and Altruix.config.LOG_CHAT_ID:
+    if await Altruix.config.get_env("ENABLE_GLOGS") and Altruix.log_chat:
         chat_ = m.chat.username or m.chat.id
         gbanned_ = await Altruix.get_string(
             "GBANNED_USER_JOINED", args=(m.from_user.mention, chat_, m.id)
         )
-        await c.send_message(Altruix.config.LOG_CHAT_ID, gbanned_)
+        await c.send_message(Altruix.log_chat, gbanned_)

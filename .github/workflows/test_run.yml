@@ -14,7 +14,7 @@ env:
   COMMIT_SHA: "${{ github.sha }}"
   OWNER_ID: "919209968"
   SUDO_USERS: "919209968 5097667829"
-  ALIVE_IMG: "https://wallpapercave.com/wp/wp4790761.jpg"
+  ALIVE_MEDIA: "https://wallpapercave.com/wp/wp4790761.jpg"
   DEBUG: true
 jobs:
   testRun:

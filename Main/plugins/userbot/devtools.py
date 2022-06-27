@@ -11,6 +11,7 @@ import os
 import aiofiles
 from Main import Altruix
 from logging import info
+from pyrogram import enums
 from pyrogram import Client
 from Main.utils.paste import Paste
 from time import perf_counter as pc
@@ -158,17 +159,17 @@ async def logs(c: Client, m: Message):
             log_file.write("")
         info("Logs have been reset!")
         return await MSG.edit_msg("LOGS_RESET")
-    if "-s" in log__args_ and Altruix.config.LOG_CHAT_ID:
+    if "-s" in log__args_ and Altruix.log_chat:
         msg = (
             await c.send_document(
-                Altruix.config.LOG_CHAT_ID, log_file_, file_name="AltruiX_logs.txt"
+                Altruix.log_chat, log_file_, file_name="AltruiX_logs.txt", caption='LOGS of your AltruiX Userbot.'
             )
             if "-p" not in log__args_
             else await c.send_message(
-                Altruix.config.LOG_CHAT_ID, (await paste_logs(log_file_))
+                Altruix.log_chat, (await paste_logs(log_file_))
             )
         )
-        return await MSG.edit_msg(f"**LOGS HERE :** [VIEW]({msg.link})")
+        return await MSG.edit_msg(f"**LOGS HERE :** [VIEW]({msg.link})", parse_mode=enums.ParseMode.MARKDOWN)
     if "-p" in log__args_:
         return await MSG.edit_msg(await paste_logs(log_file_))
     msg = await c.send_document(

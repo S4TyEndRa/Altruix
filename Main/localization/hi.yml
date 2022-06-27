@@ -79,7 +79,7 @@ LOGS_RESET : "<code>लॉग रीसेट कर दिए गए हैं
 MAX_STICKER_DONE : "उफ़! स्टिकर पैक के लिए अधिकतम स्टिकर सीमा तक पहुंच गई है - {}, वॉल्यूम पर स्विच किया जा रहा है: {}" 
 MUTED_USER : "<code> {} को सफलतापूर्वक म्यूट किया गया </code> \n​<b>कारण :</b> <code>{}</ code> \n​<b> समय सीमा :</b> <code>{}</code>​" 
 NO_AFK : "​<b>मैं अब AFK नहीं हूं!</b>​" 
-NO_ALIVE_IMG_SET : "<code>कस्टम ALIVE छवि नहीं मिली। कृपया इसे सेट करें।</code>" 
+NO_ALIVE_MEDIA_SET : "<code>कस्टम ALIVE छवि नहीं मिली। कृपया इसे सेट करें।</code>" 
 NO_BLACKLIST : "<b>इस चैट में कोई शब्द ब्लैकलिस्ट नहीं किया गया है!</b>" 
 NO_ENV_FOUND : "ENV नहीं मिला , <code>{}</code> मिला!"​
 NO_NOTES : "<b>{} में नोट नहीं मिला!</b>"
@@ -116,7 +116,7 @@ STICKER_KANGED : "स्टिकर कंगेड! यहां पाया
 TASK_COMPLETE : "सफलतापूर्वक {} {}​" 
 TELEGRAPH : "<a href=https://telegra.ph/{}>टेलीग्राफ</a>​ पर अपलोड किया गया है" 
 TERM_INPUT_REQUIRED : "<b>त्रुटि:</b> निष्पादित करने के लिए कोई आदेश नहीं है!" 
-UBSTAT : "​<b><u>सिस्टम की जानकारी</u> :</b>​\n\n​<b>प्लेटफ़ॉर्म :</b> <code>{}</code> \n​<b >प्लेटफ़ॉर्म - रिलीज़ :</b> <code>{}</code> \n​<b>प्लेटफ़ॉर्म - संस्करण :</b> <code>{}</code> \n​<b>आर्किटेक्चर :</b> <code>{}</code> \n​<b>होस्टनाम :</b> <code>{}< /code> ​\n​<b>IP :</b> <code>{}</code> \n​<b>Mac :</b> <code>{}</code>​\n​<b>प्रोसेसर :</b> <code>{}</code>​\n​<b>RAM : </b> <code>{}</code>​\n​<b >CPU :</b> <code>{}</code>​\n​<b>CPU FREQ :</b> <code>{}</code> \n​<b>DISK :</b> b> <code>{}</code>​\ \n​<b>मोंगो डीबी :</b> <code>{}/{}</code>​" 
+UBSTAT : "​<b><u>सिस्टम की जानकारी</u> :</b>​\n\n​<b>प्लेटफ़ॉर्म :</b> <code>{}</code> \n​<b >प्लेटफ़ॉर्म - रिलीज़ :</b> <code>{}</code> \n​<b>प्लेटफ़ॉर्म - संस्करण :</b> <code>{}</code> \n​<b>आर्किटेक्चर :</b> <code>{}</code> \n​<b>होस्टनाम :</b> <code>{}< /code> ​\n​<b>Mac :</b> <code>{}</code>​\n​<b>प्रोसेसर :</b> <code>{}</code>​\n​<b>RAM : </b> <code>{}</code>​\n​<b >CPU :</b> <code>{}</code>​\n​<b>CPU FREQ :</b> <code>{}</code> \n​<b>DISK :</b> b> <code>{}</code>​\ \n​<b>मोंगो डीबी :</b> <code>{}/{}</code>​" 
 UNABLE_TO_BAN : "<code>निर्दिष्ट उपयोगकर्ता को प्रतिबंधित करने में असमर्थ।</code>​\n\n​<b><u>ट्रेसबैक</u> :</b>​\n\n​<code>{} </code>" 
 UNABLE_TO_INVITE : "<code>निर्दिष्ट उपयोगकर्ता को इस चैट में आमंत्रित करने में असमर्थ।</code>​\n\n​<b><u>ट्रेसबैक</u> :</b>​\n\n​<code >{}</code>" 
 UNABLE_TO_KICK : "<code>निर्दिष्ट उपयोगकर्ता को किक करने में असमर्थ.</code>​\n\n​<b><u>ट्रेसबैक</u> :</b>​\n\n​<code>{}</code>" 

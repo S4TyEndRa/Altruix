@@ -64,7 +64,7 @@ class Updater:
         except GitCommandError:
             repo.git.reset("--hard", "FETCH_HEAD")
         await Altruix.run_cmd_async("pip3 install --no-cache-dir -r requirements.txt")
-        await Altruix.reboot(soft=False, last_msg=msg)
+        await Altruix._restart(soft=False, last_msg=msg, power_hard=True)
 
     async def update_remotely_heroku(self, ups_rem, repo, msg):
         await msg.edit_msg("HARD_UPDATE_IN_PROGRESS")

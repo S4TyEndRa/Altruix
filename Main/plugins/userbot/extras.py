@@ -6,6 +6,7 @@
 #
 # All rights reserved.
 
+import contextlib
 import os
 import re
 import uuid
@@ -30,8 +31,12 @@ def get_info():
     platform_version = platform.version()
     architecture = platform.machine()
     hostname = socket.gethostname()
-    ip_address = socket.gethostbyname(socket.gethostname())
-    mac_address = ":".join(re.findall("..", "%012x" % uuid.getnode()))
+    ip_address = "Unable to fetch"
+    mac_address = "Unable to fetch"
+    with contextlib.suppress(Exception):
+        ip_address = socket.gethostbyname(socket.gethostname())
+    with contextlib.suppress(Exception):
+        mac_address = ":".join(re.findall("..", "%012x" % uuid.getnode()))
     processor = platform.processor()
     ram = Essentials.humanbytes(round(psutil.virtual_memory().total))
     cpu_freq = psutil.cpu_freq().current
@@ -66,7 +71,7 @@ def get_info():
     ["ubstat", "stat"],
     cmd_help={
         "help": "Get info about your machine.",
-        "example": "ubstats",
+        "example": "ubstat",
     },
 )
 async def sTATS(c: Altruix, m: Message):
@@ -75,7 +80,7 @@ async def sTATS(c: Altruix, m: Message):
     database_ = await Altruix.db._db_name.command("dbstats")
     s = ub_stat + (
         Essentials.humanbytes(database_["dataSize"]),
-        Essentials.humanbytes(50000),
+        Essentials.humanbytes(database_.get('storageSize')),
     )
     out_ = tuple(s)
     await msg.edit_msg("UBSTAT", string_args=out_)
@@ -93,6 +98,6 @@ async def download_files_from_telegram(c, m):
     msg = await m.handle_message("PROCESSING")
     media = await m.reply_to_message.download()
     media_url = upload_file(media)
-    await msg.edit(f"https://telegra.ph/{media_url[0]}")
+    await msg.edit(f"https://telegra.ph{media_url[0]}")
     if os.path.exists(media):
         os.remove(media)

@@ -23,6 +23,11 @@ from .exceptions import NoDatabaseConnected, EnvVariableTypeError
 
 dotenv.load_dotenv()
 
+def digit_wrap(digit):
+    with contextlib.suppress(Exception):
+        return int(digit)
+    return digit
+
 
 class BaseConfig(object):
     BOT_TOKEN = getenv("BOT_TOKEN")
@@ -46,8 +51,7 @@ class BaseConfig(object):
     DEFAULT_REPO = "https://github.com/Altruix/Altruix"
     HEROKU_API_KEY = getenv("HEROKU_API_KEY")
     REPO = getenv("CUSTOM_REPO") or DEFAULT_REPO
-    ALIVE_MEDIA = getenv("ALIVE_MEDIA")
-    DEFAULT_PM_IMAGE = "./assets/images/pmpermit.jpg"
+    DEFAULT_PM_IMAGE = "./Main/assets/images/pmpermit.jpg"
     DEFAULT_PM_TEXT = """<b>Altruix's PM BOT</b>
 <i>Hello, {mention}. Welcome to {mymention}'s PM. Please State your concern and wait for him to respond.</i>
 
@@ -62,7 +66,7 @@ class BaseConfig(object):
     DB_URI = getenv("DB_URI")
     RESOURCE_SAVER = getenv("RESOURCE_SAVER") or "true"
     DEBUG = True if getenv("DEBUG", "false").lower() == "true" else False
-    LOG_CHAT_ID = int(getenv("LOG_CHAT_ID")) if getenv("LOG_CHAT_ID") else None
+    LOG_CHAT_ID = digit_wrap(getenv("LOG_CHAT_ID", None))
     PM_ENABLE = (
         False
         if (
@@ -81,8 +85,7 @@ class BaseConfig(object):
         ]
     except Exception:
         raise EnvVariableTypeError(Exception)
-    ALIVE_IMG = getenv("ALIVE_IMG")
-
+    ALIVE_MEDIA = getenv("ALIVE_MEDIA")
     def pop_session(self, index: int) -> Optional[str]:
         # sourcery skip: raise-specific-error
         if len(self.SESSIONS) == 0:

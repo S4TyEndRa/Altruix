@@ -221,9 +221,9 @@ async def kang_fun(c: Client, m: Union[Message, Rmessage]):
 @Altruix.register_on_cmd(
     ["stickerpacks", "sp", "msp"],
     cmd_help={
-        "help": "get all your packs",
-        "example": "getpacks -animated",
-        "_args": {"animated": "Show animated packs"},
+        "help": "get all your packs that you have kanged.",
+        "example": "sp -animated",
+        "_args": {"animated": "Show animated packs", "vs": "Show video stickers"},
     },
 )
 async def get_pack_(c: Client, m: Message):

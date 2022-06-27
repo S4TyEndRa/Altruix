@@ -14,7 +14,7 @@ from Main.core.types.message import Message
 
 
 filters_db = Altruix.db.make_collection("FILTERS")
-LOG_CHAT = BaseConfig.LOG_CHAT_ID
+LOG_CHAT = Altruix.log_chat
 
 
 @Altruix.register_on_cmd(
@@ -34,9 +34,9 @@ async def add_filter(c: Altruix, m: Message):
         {"keyword": msg, "chat_id": chat_id, "client_id": my_id_}
     )
     if m.reply_to_message.media:
-        if not LOG_CHAT:
+        if not Altruix.log_chat:
             return await ms.edit_msg("ERROR_404_NO_LOG_CHAT")
-        media = await m.reply_to_message.copy(LOG_CHAT)
+        media = await m.reply_to_message.copy(Altruix.log_chat)
         (
             await filters_db.update_one(
                 {"keyword": msg, "chat_id": chat_id, "client_id": my_id_},

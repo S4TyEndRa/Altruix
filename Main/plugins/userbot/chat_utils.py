@@ -7,6 +7,7 @@
 # All rights reserved.
 
 from os import remove
+import os
 from Main import Altruix
 from style import bullets
 from pyrogram import Client
@@ -31,7 +32,7 @@ b3 = bullets["bullet3"]
 async def set_chat_title_cmd_handler(c: Client, m: Message):
     msg = await m.handle_message("PROCESSING")
     title = m.user_input
-    if title >= 128:
+    if len(title) >= 128:
         return await msg.edit_msg("TG_LIMIT_EXE", string_args=(128, "chat-title"))
     try:
         await c.set_chat_title(m.chat.id, title)
@@ -50,20 +51,22 @@ async def set_chat_pic_cmd_handler(c: Client, m: Message):
     msg = await m.handle_message("PROCESSING")
     if m.reply_to_message:
         reply = m.reply_to_message
-        if reply.media:
-            try:
-                if reply.photo:
-                    file = reply.photo.file_id
-                elif reply.video:
-                    file = reply.video.file_id
-                await c.set_chat_photo(m.chat.id, file)
-            except Exception as be:
-                name, err = await Paste(be).paste()
-                return await msg.edit_msg(
-                    Altruix.get_string("ERROR_"), string_args=(name, err)
-                )
+        if not reply.media:
+            return await msg.edit_msg("INVALID_REPLY")
+        if reply.photo:
+            file = reply.photo.file_id
+        elif reply.video:
+            file = await reply.download()
         else:
-            await msg.edit_msg("INVALID_REPLY")
+            return await msg.edit_msg("INVALID_REPLY")
+        try:
+            await c.set_chat_photo(m.chat.id, file)
+        except Exception as be:
+            name, err = await Paste(be).paste()
+            await msg.edit_msg(
+                Altruix.get_string("ERROR_"), string_args=(name, err)
+            )
+        return os.remove(file) if os.path.exists(file) else 'ok'
     else:
         await msg.edit_msg("REPLY_TO_MESSAGE")
 

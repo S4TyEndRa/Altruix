@@ -54,7 +54,7 @@ async def fast_transfer(c: Client, m: Union[Message, MMessage]):
         return await _m.edit_msg("ILLEGAL_TRANSFER")
     count_of_ss = 0
     try:
-        async for message_ in c.iter_history(from_transfer):
+        async for message_ in c.get_chat_history(from_transfer):
             if message_.service:
                 continue
             if "-onlyimg" in _args_m and not message_.photo:

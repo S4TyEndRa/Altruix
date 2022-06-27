@@ -124,10 +124,10 @@ async def add_image_to_pm_permit(c: Client, m: Message):
         return await msg.edit_msg("DEFAULT_PM_PIC_SET_TO_DEFAULT")
     if (not m.reply_to_message) and (not m.reply_to_message.media):
         return await msg.edit_msg("INVALID_REPLY")
-    if not Altruix.config.LOG_CHAT_ID:
+    if not Altruix.log_chat:
         return await msg.edit_msg("ERROR_404_NO_LOG_CHAT")
     try:
-        media_id = await m.reply_to_message.copy(Altruix.config.LOG_CHAT_ID)
+        media_id = await m.reply_to_message.copy(Altruix.log_chat)
     except Exception as e:
         return await msg.edit_msg("PM_MEDIA_SET_FAILED", string_args=(e))
     await Altruix.config.sync_env_to_db(f"PM_MEDIA_{c.myself.id}", media_id.id)
@@ -208,7 +208,7 @@ async def pm_permit_(c: Client, m: Message):
             warns=pm_warns[m.from_user.id] if pm_warns.get(m.from_user.id) else 1,
             mymention=c.myself.mention,
         )
-    if media_ and Altruix.config.LOG_CHAT_ID:
+    if media_ and Altruix.log_chat:
         dtext = Altruix.config.DEFAULT_PM_TEXT.format(
             user_id=m.from_user.id,
             mention=m.from_user.mention,
@@ -219,7 +219,7 @@ async def pm_permit_(c: Client, m: Message):
         )
         out = await c.copy_message(
             m.chat.id,
-            Altruix.config.LOG_CHAT_ID,
+            Altruix.log_chat,
             int(media_),
             text_ or dtext,
             reply_to_message_id=id_msg,
@@ -239,7 +239,7 @@ async def pm_permit_(c: Client, m: Message):
             warns=pm_warns[m.from_user.id] if pm_warns.get(m.from_user.id) else 1,
             mymention=c.myself.mention,
         )
-        out = await m.reply_file(photo_, text_, quote=True)
+        out = await m.reply_file(photo_, caption=text_, quote=True)
     if m.from_user.id not in pm_warns:
         pm_warns[m.from_user.id] = 1
     else:

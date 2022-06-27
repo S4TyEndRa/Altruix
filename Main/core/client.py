@@ -64,7 +64,7 @@ class AltruixClient:
         self.app_url_ = None
         self.disabled_sudo_plugin_list = []
         self.SELF_PERMISSION_CACHE = TTLCache(
-            None, ttl=60 * 60, timer=time.perf_counter
+            99999, ttl=60 * 60, timer=time.perf_counter
         )
         self.loaded_bot_cmds = False
         Session.notice_displayed = True
@@ -449,7 +449,7 @@ class AltruixClient:
         self.disabled_sudo_plugin_list = await self.config.get_env(
             "DISABLED_SUDO_CMD_LIST", []
         )
-        self.log_chat = await self.config.get_env("LOG_CHAT_ID")
+        self.log_chat = self.config.digit_wrap(await self.config.get_env("LOG_CHAT_ID"))
         self.is_rson = (
             str(await self.config.get_env("RESOURCE_SAVER"))
         ).lower() not in [
@@ -601,17 +601,22 @@ class AltruixClient:
             )
 
     async def _restart(
-        self, soft=False, last_msg: Union[Message, CallbackQuery, None] = None
+        self, soft=False, last_msg: Union[Message, CallbackQuery, None] = None, power_hard=False
     ):
         self.loaded_bot_cmds = False
         _start = time.perf_counter()
         await self._setup(restart=True)
         if not soft:
+            if power_hard:
+                args = [sys.executable, "-m", "Main"]
+                return os.execle(sys.executable, *args, os.environ)
             if not self.traning_wheels_protocol and not self.clients:
                 for each in self.clients:
                     await each.restart()
             await self.bot.restart()
             self.start_time = time.time()
+        if self.CLIST:
+            self.CLIST.clear()
         await self.load_all_modules()
         time_took = Essentials.get_readable_time(time.perf_counter() - _start)
         msg = f"<b>Altruix has been {'reloaded' if soft else 'restarted'}!</b>\nTook {time_took}."
@@ -767,6 +772,7 @@ class AltruixClient:
     def prepare_help(self):
         for cmd in self.cmd_list:
             module = self.cmd_list[cmd]
+            cmd = cmd.lower()
             self.CLIST[cmd] = ""
             for cmds in module:
                 self.CLIST[

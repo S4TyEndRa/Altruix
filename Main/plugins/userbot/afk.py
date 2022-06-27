@@ -125,7 +125,7 @@ async def set_unafk(c: Client, m: Message):
     await asyncio.sleep(7)
     await _m_.delete()
     if MENTIONED:
-        if not Altruix.config.LOG_CHAT_ID:
+        if not Altruix.log_chat:
             return
         text = Altruix.get_string("AFK_MENTION", args=(len(MENTIONED)))
         for msg in MENTIONED:
@@ -133,6 +133,6 @@ async def set_unafk(c: Client, m: Message):
                 "AFK_MENTION_DETAILS",
                 args=(msg["chat_id"], msg["id"], msg["user"], msg["chat"]),
             )
-        await c.send_message(Altruix.config.LOG_CHAT_ID, text)
+        await c.send_message(Altruix.log_chat, text)
         MENTIONED = []
     afk_sanity_check.clear()

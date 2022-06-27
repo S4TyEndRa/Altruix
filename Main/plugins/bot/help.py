@@ -68,7 +68,7 @@ async def get_help_menu(return_all: bool = False):
 
 
 async def get_plugin_data(plugin: str, number: int = 0):
-    text = f"<b>Help for</b> <code>{plugin}</code>\n\n{Altruix.CLIST[plugin].strip()}"
+    text = f"<b>Help for</b> <code>{plugin}</code>\n\n{Altruix.CLIST[plugin.lower()].strip()}"
     buttons = InlineKeyboardMarkup(
         [[InlineKeyboardButton("Back", callback_data=f"help#_page#{number}")]]
     )
@@ -131,7 +131,7 @@ async def help(_: Client, iq: InlineQuery):
             ]
         )
     elif plugin in Altruix.CLIST:
-        text, _ = await get_plugin_data(plugin)
+        text, _ = await get_plugin_data(plugin.lower())
         await iq.answer(
             results=[
                 InlineQueryResultArticle(
@@ -159,7 +159,7 @@ async def help_callback(_: Client, cq: CallbackQuery):
         return await cq.edit_message_text(
             help_text, reply_markup=InlineKeyboardMarkup(buttons[number])
         )
-    if text not in Altruix.CLIST:
+    if text.lower() not in Altruix.CLIST.keys():
         return await cq.answer(Altruix.get_string("PLUGIN_404"))
     text, buttons = await get_plugin_data(text, number)
     await cq.edit_message_text(text, reply_markup=buttons)

@@ -25,7 +25,9 @@ welcome_db = Altruix.db.make_collection("WELCOME")
 )
 async def add_welcome_cmd(c: Client, m: Message):
     reply_msg = m.reply_to_message
-    save_welcome = await reply_msg.copy(int(Altruix.config.LOG_CHAT_ID))
+    if not Altruix.log_chat:
+        return await m.handle_message('ERROR_404_NO_LOG_CHAT')
+    save_welcome = await reply_msg.copy(int(Altruix.log_chat))
     if await welcome_db.find_one({"chat_id": m.chat.id, "client_id": c.myself.id}):
         await welcome_db.update_one(
             {"chat_id": m.chat.id, "client_id": c.myself.id},
@@ -67,11 +69,11 @@ async def welcome_settings_cmd(c: Client, m: Message):
     welcome_data = await welcome_db.find_one(
         {"chat_id": m.chat.id, "client_id": c.myself.id}
     )
-    if not welcome_data:
+    if not welcome_data or not Altruix.log_chat:
         return await m.handle_message("NO_WELCOME_SAVED")
     await m.handle_message("CURRENT_WELCOME")
     await c.copy_message(
-        from_chat_id=int(Altruix.config.LOG_CHAT_ID),
+        from_chat_id=int(Altruix.log_chat),
         chat_id=int(m.chat.id),
         id=welcome_data["msg_id"],
         reply_to_message_id=m.id,
@@ -109,7 +111,7 @@ async def welcome_users(c: Client, m: Message):
         {"chat_id": m.chat.id, "client_id": c.myself.id}
     )
     welcome_message = await c.get_messages(
-        Altruix.config.LOG_CHAT_ID, welcome_data["msg_id"]
+        Altruix.log_chat, welcome_data["msg_id"]
     )
     if await is_media(welcome_message):
         text = welcome_message.caption or ""

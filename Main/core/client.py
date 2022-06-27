@@ -625,8 +625,6 @@ class AltruixClient:
                     await each.restart()
             await self.bot.restart()
             self.start_time = time.time()
-        if self.CLIST:
-            self.CLIST.clear()
         await self.load_all_modules()
         time_took = Essentials.get_readable_time(time.perf_counter() - _start)
         msg = f"<b>Altruix has been {'reloaded' if soft else 'restarted'}!</b>\nTook {time_took}."
@@ -780,6 +778,7 @@ class AltruixClient:
         self.loop.run_until_complete(self._test())
 
     def prepare_help(self):
+        self.CLIST.clear()
         for cmd in self.cmd_list:
             module = self.cmd_list[cmd]
             cmd = cmd.lower()

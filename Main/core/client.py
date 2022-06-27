@@ -760,6 +760,8 @@ class AltruixClient:
             if os.path.lexists("Main/plugins/external"):
                 await self.load_from_directory("Main/plugins/externals/*.py", log=True)
             self.log("All plugins have been loaded.")
+            if self.CLIST:
+                self.CLIST.clear()
             self.prepare_help()
         print("\n")
 

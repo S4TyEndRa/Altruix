@@ -9,7 +9,6 @@
 
 import re
 import pyrogram
-from responses import Call
 from Main import Altruix
 from platform import python_version
 from pyrogram import Client, filters

@@ -119,7 +119,7 @@ It's not necessary until you host the bot. You can get the String Session after 
 > - <a href="https://www.github.com/StarkGang">          StarkGang          </a>
 > - <a href="https://www.github.com/BilakshanP">         BilakshanP         </a>
 > - <a href="https://www.github.com/Reeshuxd">           Reeshuxd           </a>
-> - <a href="https://www.github.com/Rohithaditya">       Rohithaditya       </a>
+> - <a href="https://www.github.com/Rohith-Sreedharan">       Rohithaditya       </a>
 > - <a href="https://www.github.com/StarkBotIndustries"> StarkBotIndustries </a>
 > - <a href="https://www.github.com/sohag02">            sohag02            </a>
 > - <a href="https://www.github.com/SHRE-YANSH">         SHRE-YANSH         </a>

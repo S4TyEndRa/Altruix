@@ -45,6 +45,10 @@ async def userinfo(c: Client, m: Message):
         ui = await c.get_users(user)
     except Exception as e:
         return await msg.edit_msg("INVALID_USER_ERROR", string_args=(e))
+    if ui.dc_id is None:
+        xio = "No DC ID FOUND"
+    else:
+        xio = {ui.dc_id}, {dc_id[ui.dc_id]}
     ui_text = [
         f"{b3} <b>User-info of <i>“{ui.mention}”</i> :</b>\n\n",
         f"  {b1} <b>Firstname : <i>{ui.first_name}</i></b>\n",
@@ -53,7 +57,7 @@ async def userinfo(c: Client, m: Message):
         if ui.username
         else "",
         f"  {b1} <b>User ID :</b> <code>{ui.id}</code>\n\n",
-        f"  {b2} <b>User DCID : <i>{ui.dc_id}, {dc_id[ui.dc_id]}</i></b>\n",
+        f"  {b2} <b>User DCID : <i>{xio}</i></b>\n", #
         f"  {b2} <b>Status : <i>{ui.status}</i></b>\n",
         f"  {b2} <b>Is Bot : <i>{'Yes' if ui.is_bot else 'No'}</i></b>\n",
         f"  {b2} <b>Is Scam : <i>{'Yes' if ui.is_scam else 'No'}</i></b>\n",

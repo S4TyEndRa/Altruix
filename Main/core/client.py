@@ -57,6 +57,7 @@ class AltruixClient:
         self.clients: List[Client] = []
         self.cmd_list = {}
         self.all_lang_strings = {}
+        self.auto_approve = False
         self.__version__ = "0.1"
         self.selected_lang = "english"
         self.local_lang_file = "./Main/localization"
@@ -75,7 +76,7 @@ class AltruixClient:
         self._init_logger()
         self.config = BaseConfig
         self.local_db = LocalDatabase()
-        self.loop = asyncio.get_event_loop()
+        self.loop = asyncio.new_event_loop()
         self.loop.run_until_complete(self._db_setup())
         self.executor = ThreadPoolExecutor(max_workers=multiprocessing.cpu_count() * 5)
         self.config = Config(self.db.env_col, loop=self.loop, executor=self.executor)
@@ -472,6 +473,7 @@ class AltruixClient:
             "true",
             "enable",
         }
+        self.auto_approve = str((await self.config.get_env('AUTOAPPROVE'))).lower() in {'yes', 'true', 'ok'}
         if not restart:
             await self.initialize_telegram_sessions(*args, **kwargs)
         await self.update_cache()

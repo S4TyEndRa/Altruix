@@ -9,6 +9,7 @@
 
 import re
 import pyrogram
+from responses import Call
 from Main import Altruix
 from platform import python_version
 from pyrogram import Client, filters
@@ -61,6 +62,7 @@ async def get_help_menu(return_all: bool = False):
                 if i.text == str(index + 1):
                     i.text = f"☞ {i.text} ☜"
             page.append(page_buttons)
+            page.append([InlineKeyboardButton('Close', 'close_help')])
     cache_help_menu = buttons
     if multi_pages and not return_all:
         return cache_help_menu[0]
@@ -74,6 +76,11 @@ async def get_plugin_data(plugin: str, number: int = 0):
     )
     return text, buttons
 
+
+@Altruix.bot.on_callback_query(filters.regex('close_help'))
+@iuser_check
+async def close_help(c: Client, cq: CallbackQuery):
+    await cq.edit_message_text('<b>Help Menu Closed 🔐</b>', reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Re-Open', 're_open')]]))
 
 @Altruix.bot.on_inline_query(filters.regex("^change_lang", flags=re.IGNORECASE))
 @iuser_check
@@ -141,6 +148,11 @@ async def help(_: Client, iq: InlineQuery):
             ]
         )
 
+@Altruix.bot.on_callback_query(filters.regex('^re_open'))
+@iuser_check
+async def re_help(c: Client, cq: CallbackQuery):
+    buttons = await get_help_menu()
+    await cq.edit_message_text(help_text, reply_markup=InlineKeyboardMarkup(buttons))
 
 @Altruix.bot.on_callback_query(filters.regex("^help"))
 @iuser_check

@@ -11,6 +11,7 @@ from Main import Altruix
 from pyrogram import Client
 from Main.core.types.message import Message
 from pyrogram.raw.functions.account import CheckUsername, GetAuthorizations
+from pyrogram.raw.types import Authorization
 
 
 @Altruix.register_on_cmd(
@@ -62,7 +63,7 @@ async def set(c: Client, m: Message):
                 Altruix.get_string("USERNAME_TAKEN").format(f"@{uname}")
             )
 
-        await c.update_username(uname)
+        await c.set_username(uname)
         await m.handle_message(Altruix.get_string("CHANGE").format("LastName", uname))
     elif "-p" in args:
         if not m.reply_to_message:
@@ -75,5 +76,9 @@ async def set(c: Client, m: Message):
         await m.handle_message("CHNG_PHOTO")
         remove(pic)
     elif "-s" in args:
-        sessions = await GetAuthorizations()
-        await m.handle_message(f"<code>{len(sessions)}</code>")
+        sessions = (await c.invoke(GetAuthorizations())).authorizations
+        text_ = f"<b>Sessions :</b> ({len(sessions)}) \n\n"
+        for session in sessions:
+            session : Authorization = session
+            text_ += f'> <b>Device :</b> <code>{session.device_model} {session.platform} V{session.system_version}</code> \n<b>App :</b> <code>{session.app_name} V{session.app_version}</code> \n<b>Region :</b> <code>{session.country} - {session.region} ({session.ip})</code> \n\n'
+        await m.handle_message(text_)

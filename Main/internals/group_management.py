@@ -298,15 +298,10 @@ async def purge(c: Client, m: Message):
     ms = await m.handle_message("PROCESSING")
     no_of_msg_purged = 0
     ids = []
-    async for msg in c.get_chat_history(
-        chat_id=m.chat.id,
-        offset=m.id,
-        offset_id=m.reply_to_message.id,
-        
-    ):
-        if msg.id not in [m.id, ms.id]:
+    for msg_id in range(m.reply_to_message.id, m.id):
+        if msg_id not in [m.id, ms.id]:
             no_of_msg_purged += 1
-            ids.append(msg.id)
+            ids.append(msg_id)
             if len(ids) >= 100:
                 await c.delete_messages(chat_id=m.chat.id, message_ids=ids, revoke=True)
                 ids.clear()

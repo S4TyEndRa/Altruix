@@ -7,7 +7,10 @@
 # All rights reserved.
 
 
+import asyncio
+import contextlib
 import re
+import shlex
 import sys
 import traceback
 import subprocess
@@ -59,61 +62,27 @@ async def eval_py(client: Client, code: str, m: Message):
         evaluation = Altruix.get_string("NO_OUTPUT")
     return evaluation.strip()
 
-
-@run_in_exc
-def exec_terminal(command: str):
-    command = command.strip()
+async def exec_terminal(command: str):
     success = True
     return_code = 0
-    if "\n" in command:
-        code = command.split("\n")
-        output = ""
-        for x in code:
-            shell = re.split(""" (?=(?:[^'"]|'[^']*'|"[^"]*")*$)""", x)
-            try:
-                process = subprocess.Popen(
-                    shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-                )
-                stdout, stderr = process.communicate()
-                output += stdout.decode("utf-8")
-                if stderr:
-                    output += stderr.decode("utf-8")
-                return_code = process.returncode
-
-            except Exception:
-                exc_type, exc_obj, exc_tb = sys.exc_info()
-                errors = traceback.format_exception(
-                    etype=exc_type, value=exc_obj, tb=exc_tb
-                )
-                success = False
-                output += errors[-1]
-                return_code = process.returncode
-    else:
-        shell = re.split(""" (?=(?:[^'"]|'[^']*'|"[^"]*")*$)""", command)
-        for a in range(len(shell)):
-            shell[a] = shell[a].replace('"', "")
-        try:
-            process = subprocess.Popen(
-                shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    command = shlex.split(command)
+    output = ""
+    try:
+        process = await asyncio.create_subprocess_exec(
+                *command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
             )
-            stdout, stderr = process.communicate()
-            # output = process.stdout.read().decode()
-            output = stdout.decode("utf-8")
-            if stderr:
-                output += stderr.decode("utf-8")
-            return_code = process.returncode
-        except Exception:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            errors = traceback.format_exception(
-                etype=exc_type, value=exc_obj, tb=exc_tb
-            )
-            success = False
-            output = errors[-1]
-            return success, output, return_code
-    if str(output) == "\n":
-        output = None
+        return_code = process.returncode
+        stdout, stderr = await process.communicate()
+        output += stdout.decode("utf-8").strip()
+        if stderr:
+            output += ("\n" + stderr.decode("utf-8").strip())
+        success = True
+    except Exception:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        errors = traceback.format_exception(etype=exc_type, value=exc_obj, tb=exc_tb)
+        success = False
+        output += errors[-1]
     return success, output, return_code
-
 
 Altruix.__setattr__("run_cmd", exec_terminal)
 Altruix.__setattr__("eval_py", eval_py)

@@ -53,7 +53,7 @@ async def paste_cb_handler(_, cb: CallbackQuery):
     text = Altruix.local_db.get_from_col("paste", cb.matches[0].group(2))
     if not text:
         return await cb.edit_message_text(Altruix.get_string("DB_KEY_NOT_FOUND"))
-    service, link = Paste(
+    service, link = await Paste(
         text, author=Altruix.ourselves[0].first_name, service=service
     ).paste()
     await cb.edit_message_text(

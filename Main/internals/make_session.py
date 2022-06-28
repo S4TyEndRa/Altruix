@@ -130,7 +130,7 @@ async def add_session_cb_handler(_, cb: CallbackQuery):
                 if len(username) < 5:
                     await cb.from_user.ask("This username too short.. send again")
                 else:
-                    await app.update_username(username)
+                    await app.set_username(username=username)
                     break
             except UsernameOccupied:
                 ask_name = await cb.from_user.ask(

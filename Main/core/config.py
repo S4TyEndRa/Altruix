@@ -48,6 +48,7 @@ class BaseConfig(object):
     HEROKU_APP_NAME = getenv("HEROKU_APP_NAME")
     HELP_MENU_ROWS = int(getenv("HELP_MENU_ROWS", 6))
     HELP_MENU_COLUMNS = int(getenv("HELP_MENU_ROWS", 3))
+    AUTOAPPROVE = getenv('AUTOAPPROVE', True)
     DEFAULT_REPO = "https://github.com/Altruix/Altruix"
     HEROKU_API_KEY = getenv("HEROKU_API_KEY")
     REPO = getenv("CUSTOM_REPO") or DEFAULT_REPO
@@ -59,7 +60,7 @@ class BaseConfig(object):
 """
     APPROVED_DICT: dict = {}
     CUSTOM_PM_TEXT: dict = {}
-    UPDATE_ON_STARTUP = False if getenv('UPDATE_ON_STARTUP', 'yes').lower() in ['n', 'nope', 'false'] else True
+    UPDATE_ON_STARTUP = False if (getenv('UPDATE_ON_STARTUP', 'yes').lower() in ['n', 'nope', 'false']) else True
     CUSTOM_PM_MEDIA: dict = {}
     PM_WARNS_DICT: dict = {}
     DB_NAME = "mongo"

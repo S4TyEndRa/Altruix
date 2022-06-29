@@ -120,7 +120,6 @@ async def admin_or_sudo(c: Client, m: Message):
 )
 async def del_blacklisted(c: Client, m: Message):
     msg = (m.text or m.caption).lower()
-    print(msg)
     my_id = c.myself.id
     split = msg.split(" ")
     for msg in split:

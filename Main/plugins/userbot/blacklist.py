@@ -64,8 +64,8 @@ async def list_blacklist_cmd_handler(c: Client, m: Message):
         await processing_msg.edit_msg("NO_BLACKLIST")
         return ""
     result = Altruix.get_string("BLACKLIST_WORD", args=(m.chat.title))
-    for blword in bldata:
-        result += f"◍ <code>{blword['blword']}</code> \n"
+    for bl_word in bldata:
+        result += f"◍ <code>{bl_word['bl_word']}</code> \n"
     await processing_msg.edit(result)
 
 
@@ -91,11 +91,11 @@ async def delete_blacklist_cmd_handler(c: Client, m: Message):
         await processing_msg.edit_msg("BL_REMOVE_ALL")
         return ""
     if not await bl_db.find_one(
-        {"chat_id": m.chat.id, "blword": rmword, "client_id": my_id}
+        {"chat_id": m.chat.id, "bl_word": rmword, "client_id": my_id}
     ):
         await processing_msg.edit_msg("NOT_BLACKLISTED", string_args=(rmword))
         return ""
-    await bl_db.delete_one({"chat_id": m.chat.id, "blword": rmword, "client_id": my_id})
+    await bl_db.delete_one({"chat_id": m.chat.id, "bl_word": rmword, "client_id": my_id})
     await processing_msg.edit_msg("BL_REMOVE", string_args=(rmword))
 
 
@@ -108,7 +108,7 @@ async def blchat(filter, c: Client, m: Message):
 
 async def admin_or_sudo(c: Client, m: Message):
     status = (await c.get_chat_member(m.chat.id, m.from_user.id)).status
-    return status == "administrator" or m.from_user.id in c.config.SUDO_USERS
+    return bool(status.ADMINISTRATOR or status.OWNER or m.from_user.id in Altruix.auth_users)
 
 
 @Altruix.on_message(
@@ -120,13 +120,14 @@ async def admin_or_sudo(c: Client, m: Message):
 )
 async def del_blacklisted(c: Client, m: Message):
     msg = (m.text or m.caption).lower()
+    print(msg)
     my_id = c.myself.id
     split = msg.split(" ")
     for msg in split:
         data = await bl_db.find_one(
             {"chat_id": int(m.chat.id), "bl_word": msg, "client_id": my_id}
         )
-        if data and not await admin_or_sudo(c, m):
+        if data and await admin_or_sudo(c, m):
             if data["warns"]:
                 if m.from_user.id not in warn_count.keys():
                     warn_count[m.from_user.id] = 1

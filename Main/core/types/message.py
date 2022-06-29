@@ -198,7 +198,7 @@ class Message:
             return await self.reply_msg(text_, **kwargs)
         if not self:
             return await self.edit_msg(text_, **kwargs)
-        if not self.from_user:
+        if not self.from_user or not self.from_user.id:
             return await self.edit_msg(text_, **kwargs)
         if int(self.from_user.id) in sudo_users:
             if self.reply_to_message:

@@ -10,6 +10,7 @@ import os
 import time
 from Main import Altruix
 from Main.utils.essentials import Essentials
+from pyrogram.types import Message
 
 
 @Altruix.register_on_cmd(
@@ -17,8 +18,10 @@ from Main.utils.essentials import Essentials
     cmd_help={"help": "download files from telegram", "cmd_help": "download"},
     requires_reply=True,
 )
-async def download_files_from_telegram(c, m):
+async def download_files_from_telegram(c, m: Message):
     msg = await m.handle_message("PROCESSING")
+    if not m.reply_to_message.media:
+        return await msg.edit_msg('REPLY_TO_FILE')
     input_ = m.user_input
     user_args = m.user_args
     start_time = time.time()

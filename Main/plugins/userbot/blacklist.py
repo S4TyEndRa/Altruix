@@ -37,7 +37,12 @@ async def add_blacklist_cmd_handler(c: Client, m: Message):
             "ALREADY_BLACKLISTED", string_args=(raw_text, m.chat.title)
         )
         return ""
-    warns = int(user_args[0][2:]) if any("-w" in s for s in user_args) else False
+    warns = False
+    if any("-w" in s for s in user_args):
+        warns = [x for x in user_args if x.startswith("-w")][0][2:]
+        if warns == '' or not warns.isdigit():
+            return await m.handle_message("INVALID_BLACKLIST_SYNTAX")
+        warns = int(warns)
     await bl_db.insert_one(
         {"chat_id": m.chat.id, "bl_word": raw_text, "warns": warns, "client_id": my_id}
     )

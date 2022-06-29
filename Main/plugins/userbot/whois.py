@@ -61,7 +61,6 @@ async def userinfo(c: Client, m: Message):
         f"  {b2} <b>Is Verified : <i>{'Yes' if ui.is_verified else 'No'}</i></b> \n",
         f"  {b2} <b>Common Chats Count : <i>{len(await ui.get_common_chats())}</i></b>"
     ]
-
     pic = ui.photo.big_file_id if ui.photo else None
     if pic is not None:
         await msg.delete()

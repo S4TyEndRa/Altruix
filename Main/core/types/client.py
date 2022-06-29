@@ -112,7 +112,7 @@ class CustomClientMethods:
         )
 
     async def fetch_chats(self: Client):
-        return [x async for x in self.get_dialogs() if (not x.chat.PRIVATE or not x.chat.BOT)]
+        return [x async for x in self.get_dialogs() if (not x.chat.type.PRIVATE or not x.chat.type.BOT)]
 
     async def check_my_perm(self, msg, perm_type):
         my_id = self.myself.id

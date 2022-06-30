@@ -58,7 +58,7 @@ async def help_normal(c: Client, m):
             cmd_list = cmd_list[:-2]
             cmd_list += f"\n\n<i>Use</i> <code>{Altruix.user_command_handler}help plugin name</code> <i>to know more!</i>"
             await m.handle_message(cmd_list)
-        else:
+        elif user_input and not cmd_lists.get(user_input):
             if (
                 len(get_close_matches(user_input, cmd_lists.keys(), n=4, cutoff=0.3))
                 > 0

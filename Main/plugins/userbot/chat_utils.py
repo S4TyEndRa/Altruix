@@ -52,6 +52,7 @@ async def set_chat_pic_cmd_handler(c: Client, m: Message):
     if m.reply_to_message:
         reply = m.reply_to_message
         if not reply.media:
+            
             return await msg.edit_msg("INVALID_REPLY")
         if reply.photo:
             file = reply.photo.file_id

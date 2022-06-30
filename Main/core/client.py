@@ -76,7 +76,7 @@ class AltruixClient:
         self._init_logger()
         self.config = BaseConfig
         self.local_db = LocalDatabase()
-        self.loop = asyncio.new_event_loop()
+        self.loop = asyncio.get_event_loop()
         self.loop.run_until_complete(self._db_setup())
         self.executor = ThreadPoolExecutor(max_workers=multiprocessing.cpu_count() * 5)
         self.config = Config(self.db.env_col, loop=self.loop, executor=self.executor)
@@ -566,7 +566,6 @@ class AltruixClient:
                         session_string=each,
                     ).start()
                     client.myself = await client.get_me()
-                    client.set_parse_mode(enums.ParseMode.HTML)
                     self.clients.append(client)
                     self.ourselves.append(client.myself)
                     self.log(f"[{count + 1}/{len(string_sessions)}] Sessions Loaded.")
@@ -579,9 +578,9 @@ class AltruixClient:
                         f"Session {count + 1} became unusable, please re-add the session using the assistant bot."
                     )
                     popped = self.config.pop_session(count)
-                    if not popped:
-                        popped = self.config.SESSIONS[count]
-                    await self.config.pop_element_from_list("SESSIONS", popped)
+                    # if not popped:
+                    #   popped = self.config.SESSIONS[count]
+                    await self.config.pop_element_from_list("SESSIONS", each)
             if not self.clients:
                 await self.config.del_env_from_db("SESSIONS")
                 self.traning_wheels_protocol = True
@@ -662,8 +661,8 @@ class AltruixClient:
             m = await client.send_message(chat_id, txt_, **args)
         except MessageTooLong:
             text = Essentials.md_to_text(txt_)
-            service, paste_link = await Paste(text).to_nekobin()
-            txt = headers.format(service, paste_link)
+            service, paste_link = await Paste(text).paste()
+            txt = headers.format(service.title(), paste_link)
             m = await client.send_message(chat_id, txt, **args)
         return m
 

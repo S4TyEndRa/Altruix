@@ -7,6 +7,7 @@
 # All rights reserved.
 
 
+from sqlalchemy import true
 from Main import Altruix
 from pyrogram import Client
 from Main.core.types.message import Message
@@ -69,28 +70,24 @@ async def bcast_remove(c: Client, m: Message):
         "help": "To broadcast the replied message",
         "example": "bcast <replyt_o_msg>",
     },
+    requires_reply=True
 )
 async def broadcast(c: Client, m: Message):
     success = 0
     err = 0
     msg = await m.handle_message("PROCESSING")
-    if m.reply_to_message:
-        chats = []
-        async for x in bcast_db.find({"client_id": c.myself.id}):
-            chats.append(x)
-        if not chats:
-            return await msg.edit("No chats saved in db")
-        await msg.edit("<code>sending message......</code>")
-        for chat in chats:
-            try:
-                await c.copy_message(
-                    chat_id=chat["chat_id"],
-                    from_chat_id=m.chat.id,
-                    id=m.reply_to_message.id,
-                )
-                success += 1
-            except Exception:
-                err += 1
+    chats = []
+    async for x in bcast_db.find({"client_id": c.myself.id}):
+        chats.append(x['chat_id'])
+    if not chats:
+        return await msg.edit("No chats saved in db")
+    for chat in chats:
+        try:
+            await c.copy_message(chat_id=int(chat), from_chat_id=m.chat.id, message_id=m.reply_to_message.id)
+            success += 1
+        except Exception:
+            Altruix.log()
+            err += 1
     await msg.edit(
-        f"Succesfully broadcasted in {success} chats and errors in {err} chats!"
+        f"Succesfully broadcasted in <code>{success}</code> chats and errors in <code>{err}</code> chats!"
     )

@@ -96,6 +96,8 @@ async def sTATS(c: Altruix, m: Message):
 )
 async def download_files_from_telegram(c, m):
     msg = await m.handle_message("PROCESSING")
+    if not m.reply_to_message.media:
+        return await msg.edit_msg("REPLY_TO_FILE")
     media = await m.reply_to_message.download()
     media_url = upload_file(media)
     await msg.edit(f"https://telegra.ph{media_url[0]}")

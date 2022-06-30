@@ -7,6 +7,7 @@
 # All rights reserved.
 
 from os import remove
+import os
 from Main import Altruix
 from pyrogram import Client
 from Main.core.types.message import Message
@@ -62,9 +63,8 @@ async def set(c: Client, m: Message):
             return await m.handle_message(
                 Altruix.get_string("USERNAME_TAKEN").format(f"@{uname}")
             )
-
         await c.set_username(uname)
-        await m.handle_message(Altruix.get_string("CHANGE").format("LastName", uname))
+        await m.handle_message(Altruix.get_string("CHANGE").format("Username", uname))
     elif "-p" in args:
         if not m.reply_to_message:
             return await m.handle_message("REPLY_REQUIRED")
@@ -74,7 +74,8 @@ async def set(c: Client, m: Message):
         pic = await c.download_media(reply.photo.file_id)
         await c.set_profile_photo(photo=pic)
         await m.handle_message("CHNG_PHOTO")
-        remove(pic)
+        if os.path.exists(pic):
+            remove(pic)
     elif "-s" in args:
         sessions = (await c.invoke(GetAuthorizations())).authorizations
         text_ = f"<b>Sessions :</b> ({len(sessions)}) \n\n"

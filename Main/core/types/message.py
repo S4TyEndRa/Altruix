@@ -109,8 +109,8 @@ class Message:
                 text = txt
         if force_paste:
             text = Essentials.md_to_text(text)
-            service, paste_link = await Paste(text).to_nekobin()
-            _p = f"{headers.format(service.upper())} : <b><a href='{paste_link}'>PREVIEW</a></b>"
+            service, paste_link = await Paste(text).paste()
+            _p = f"{headers.format(service.title())} : <b><a href='{paste_link}'>PREVIEW</a></b>"
             return await self.edit(_p, disable_web_page_preview=True, **args)
         if force_file:
             if ";" in force_file:
@@ -134,8 +134,8 @@ class Message:
             msg_ = await self.edit(text, **args)
         except MessageTooLong:
             text = Essentials.md_to_text(text)
-            service, paste_link = await Paste(text).to_nekobin()
-            _p = f"{headers.format(service.upper())} : <b><a href='{paste_link}'>PREVIEW</a></b>"
+            service, paste_link = await Paste(text).paste
+            _p = f"{headers.format(service.title())} : <b><a href='{paste_link}'>PREVIEW</a></b>"
             msg_ = await self.edit(_p, disable_web_page_preview=True, **args)
         if del_in and isinstance(del_in, int):
             await asyncio.sleep(del_in)
@@ -166,8 +166,8 @@ class Message:
                 text = txt
         if force_paste:
             text = Essentials.md_to_text(text)
-            service, paste_link = await Paste(text).to_nekobin()
-            _p = f"{headers.format(service.upper())} : <b><a href='{paste_link}'>PREVIEW</a></b>"
+            service, paste_link = await Paste(text).paste()
+            _p = f"{headers.format(service.title())} : <b><a href='{paste_link}'>PREVIEW</a></b>"
             return await self.reply(
                 _p, quote=True, disable_web_page_preview=True, **args
             )
@@ -184,8 +184,8 @@ class Message:
             msg_ = await self.reply(text, quote=True, **args)
         except MessageTooLong:
             text = Essentials.md_to_text(text)
-            service, paste_link = await Paste(text).to_nekobin()
-            _p = f"{headers.format(service.upper())} : <b><a href='{paste_link}'>PREVIEW</a></b>"
+            service, paste_link = await Paste(text).paste()
+            _p = f"{headers.format(service.title())} : <b><a href='{paste_link}'>PREVIEW</a></b>"
             msg_ = await self.reply(_p, disable_web_page_preview=True, **args)
         if del_in and isinstance(del_in, int):
             await asyncio.sleep(del_in)

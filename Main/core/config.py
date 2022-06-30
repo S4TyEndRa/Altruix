@@ -87,9 +87,10 @@ class BaseConfig(object):
         ]
     except Exception:
         raise EnvVariableTypeError(Exception)
+    
     ALIVE_MEDIA = getenv("ALIVE_MEDIA")
+    
     def pop_session(self, index: int) -> Optional[str]:
-        # sourcery skip: raise-specific-error
         if len(self.SESSIONS) == 0:
             raise Exception("No sessions to pop")
         if index <= len(self.SESSIONS):
@@ -151,7 +152,6 @@ def var_check(func):
             return await func(*args, **kwargs)
         except Exception as e:
             raise EnvVariableTypeError(e) from e
-
     return var_check
 
 
@@ -164,7 +164,6 @@ class Config(BaseConfig):
                 "Please add database uri, So that the Userbot can function!"
             )
         self.env_col: AgnosticCollection = env_col
-        # self.stickers_col = args.get("STICKERS")
         self.loop = asyncio.get_event_loop() if loop is None else loop
         self.loop.run_until_complete(self.get_sudo())
         self.loop.run_until_complete(self.load_vars_from_db())

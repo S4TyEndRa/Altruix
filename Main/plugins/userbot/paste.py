@@ -6,8 +6,6 @@
 #
 # All rights reserved.
 
-# q-check
-
 from Main import Altruix
 from pyrogram import Client
 from Main.utils.paste import Paste

@@ -6,8 +6,6 @@
 #
 # All rights reserved.
 
-# q-check
-
 import time
 from Main import Altruix
 from pyrogram import Client

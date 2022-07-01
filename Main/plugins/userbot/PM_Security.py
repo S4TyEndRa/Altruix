@@ -18,7 +18,8 @@ APPROVED_DICT = Config.APPROVED_DICT or {}
 CUSTOM_PM_MEDIA = Config.CUSTOM_PM_MEDIA
 CUSTOM_PM_TEXT = Config.CUSTOM_PM_TEXT
 PM_WARNS_DICT = Config.PM_WARNS_DICT
-
+PM_WARNS_ACTIVE_CACHE = {}
+LPM = {}
 
 @Altruix.register_on_cmd(
     "approve",
@@ -139,6 +140,23 @@ async def add_image_to_pm_permit(c: Client, m: Message):
 
 
 @Altruix.register_on_cmd(
+    ['setpmwarnlimit', 'spwl'],
+    bot_mode_unsupported=True,
+    cmd_help={
+        "help": "Set your custom max PM warning limit!",
+        "example": "setpmwarnlimit 5",
+    }
+)
+async def setpmwlimit(c: Client, m: Message):
+    msg = m.handle_message('PROCESSING')
+    limit = str(m.user_input)
+    if not limit or not limit.isdigit() or (int(limit) <= 1):
+        return await msg.edit_msg('INVALID_LIMIT', string_args=(limit))
+    await Altruix.config.sync_env_to_db(f'PM_WARNS_COUNT_{c.myself.id}', int(limit))
+    PM_WARNS_DICT[c.myself.id] = int(limit)
+    await msg.edit_msg('LIMIT_SET', string_args=(limit))
+
+@Altruix.register_on_cmd(
     ["setpmtext"],
     bot_mode_unsupported=True,
     cmd_help={
@@ -167,11 +185,6 @@ async def add_custom_text_to_pm_permit(c: Client, m: Message):
     await msg.edit_msg("PM_TEXT_INIT")
 
 
-pm_warns = {}
-last_pm_msg = {}
-is_enabled_pm_permit = False
-
-
 @Altruix.on_message(
     filters.private & ~filters.group & ~filters.channel, 3, bot_mode_unsupported=True
 )
@@ -190,11 +203,11 @@ async def pm_permit_(c: Client, m: Message):
         return
     pm_warns_count = int(PM_WARNS_DICT.get(c.myself.id) or 3)
     if (
-        pm_warns.get(int(m.from_user.id))
-        and int(pm_warns[m.from_user.id]) >= pm_warns_count
+        PM_WARNS_ACTIVE_CACHE.get(int(m.from_user.id))
+        and int(PM_WARNS_ACTIVE_CACHE[m.from_user.id]) >= pm_warns_count
     ):
         await m.reply_msg("PM_PERMIT_ALREADY_WARNED")
-        del pm_warns[m.from_user.id]
+        del PM_WARNS_ACTIVE_CACHE[m.from_user.id]
         return await m.from_user.block()
     media_ = CUSTOM_PM_MEDIA.get(c.myself.id)
     text_ = CUSTOM_PM_TEXT.get(c.myself.id)
@@ -205,7 +218,7 @@ async def pm_permit_(c: Client, m: Message):
             mention=m.from_user.mention,
             user_name=m.from_user.username,
             max_warns=pm_warns_count,
-            warns=pm_warns[m.from_user.id] if pm_warns.get(m.from_user.id) else 1,
+            warns=PM_WARNS_ACTIVE_CACHE[m.from_user.id] if PM_WARNS_ACTIVE_CACHE.get(m.from_user.id) else 1,
             mymention=c.myself.mention,
         )
     if media_ and Altruix.log_chat:
@@ -214,7 +227,7 @@ async def pm_permit_(c: Client, m: Message):
             mention=m.from_user.mention,
             user_name=m.from_user.username,
             max_warns=pm_warns_count,
-            warns=pm_warns[m.from_user.id] if pm_warns.get(m.from_user.id) else 1,
+            warns=PM_WARNS_ACTIVE_CACHE[m.from_user.id] if PM_WARNS_ACTIVE_CACHE.get(m.from_user.id) else 1,
             mymention=c.myself.mention,
         )
         out = await c.copy_message(
@@ -236,14 +249,14 @@ async def pm_permit_(c: Client, m: Message):
             mention=m.from_user.mention,
             user_name=m.from_user.username,
             max_warns=pm_warns_count,
-            warns=pm_warns[m.from_user.id] if pm_warns.get(m.from_user.id) else 1,
+            warns=PM_WARNS_ACTIVE_CACHE[m.from_user.id] if PM_WARNS_ACTIVE_CACHE.get(m.from_user.id) else 1,
             mymention=c.myself.mention,
         )
         out = await m.reply_file(photo_, caption=text_, quote=True)
-    if m.from_user.id not in pm_warns:
-        pm_warns[m.from_user.id] = 1
+    if m.from_user.id not in PM_WARNS_ACTIVE_CACHE:
+        PM_WARNS_ACTIVE_CACHE[m.from_user.id] = 1
     else:
-        pm_warns[m.from_user.id] += 1
-    if m.from_user.id in last_pm_msg:
-        await last_pm_msg[m.from_user.id]._delete()
-    last_pm_msg[m.from_user.id] = out
+        PM_WARNS_ACTIVE_CACHE[m.from_user.id] += 1
+    if m.from_user.id in LPM:
+        await LPM[m.from_user.id]._delete()
+    LPM[m.from_user.id] = out

@@ -63,7 +63,6 @@ class AltruixClient:
         self.local_lang_file = "./Main/localization"
         self.cmd_list = {}
         self.start_time = time.time()
-        self.is_rson = False
         self.app_url_ = None
         self.disabled_sudo_plugin_list = []
         self.SELF_PERMISSION_CACHE = TTLCache(
@@ -136,6 +135,7 @@ class AltruixClient:
         try:
             dns.resolver.resolve('www.google.com')
         except Exception:
+            self.log('Resolving DNS. Setting to : 8.8.8.8')
             dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
             dns.resolver.default_resolver.nameservers = ["8.8.8.8"]
 
@@ -146,7 +146,7 @@ class AltruixClient:
         self.db = MongoDB(self.config.DB_URI)
         self.log("Initialized Mongo successfully!")
         await self.db.ping()
-        self.log("Tested Mongo successfully!")
+        self.log("Pinged Mongo successfully!")
         self.app_url_ = await prepare_heroku_url()
 
     def run_in_exc(self, func_):
@@ -168,6 +168,7 @@ class AltruixClient:
                 try:
                     data = yaml.safe_load(f)
                 except Exception:
+                    self.log()
                     continue
                 language_to_load = data.get("language")
                 if language_to_load == "template":
@@ -461,13 +462,6 @@ class AltruixClient:
             "DISABLED_SUDO_CMD_LIST", []
         )
         self.log_chat = self.config.digit_wrap(await self.config.get_env("LOG_CHAT_ID"))
-        self.is_rson = (
-            str(await self.config.get_env("RESOURCE_SAVER"))
-        ).lower() not in [
-            "no",
-            "disable",
-            "false",
-        ]
         self.bot_mode = (str(await self.config.get_env("BOT_MODE"))).lower() in {
             "yes",
             "true",
@@ -620,7 +614,7 @@ class AltruixClient:
         if not soft:
             if power_hard:
                 args = [sys.executable, "-m", "Main"]
-                return os.execle(sys.executable, *args, os.environ)
+                os.execle(sys.executable, *args, os.environ)
             if not self.traning_wheels_protocol and not self.clients:
                 for each in self.clients:
                     await each.restart()

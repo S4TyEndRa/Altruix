@@ -19,13 +19,13 @@ class Cache:
 
     async def update_approved_list_on_startup(self):
         for client in self.clients:
-            APPROVED_LIST = f"PMAPPROVED_USERS_LIST_{client.myself.id}"
+            APPROVED_LIST = f"TO_PM_APPROVED_USERS_LIST_{client.myself.id}"
             if get_approved := await self.db.data_col.find_one(APPROVED_LIST):
                 get_approved = get_approved.get("user_id")
             if get_approved:
                 if not isinstance(get_approved, list):
                     get_approved = [get_approved]
-                if self.config.APPROVED_DICT.get(client.myself.id):
+                if not self.config.APPROVED_DICT.get(client.myself.id):
                     self.config.APPROVED_DICT[client.myself.id] = []
                 self.config.APPROVED_DICT[client.myself.id] = get_approved
             if media_ := await self.config.get_env_from_db(

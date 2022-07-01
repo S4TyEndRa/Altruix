@@ -6,8 +6,7 @@
 #
 # All rights reserved.
 
-# q-check
-
+from json import JSONDecodeError
 import httpx
 import random
 import contextlib
@@ -40,7 +39,7 @@ class Paste:
         try:
             data = resp.json()
             return "nekobin", f"https://nekobin.com/{data['result']['key']}"
-        except (KeyError, TypeError, TimeoutError):
+        except (KeyError, TypeError, TimeoutError, JSONDecodeError):
             return None, None
 
     async def to_spacebin(self) -> Set[Union[str, None]]:
@@ -50,7 +49,7 @@ class Paste:
         try:
             data = r.json()
             return "spacebin", f'https://spaceb.in/{data["payload"]["id"]}'
-        except (KeyError, TypeError, TimeoutError):
+        except (KeyError, TypeError, TimeoutError, JSONDecodeError):
             return None, None
 
     async def to_hastebin(self) -> Set[Union[str, None]]:
@@ -58,7 +57,7 @@ class Paste:
         try:
             data = r.json()
             return "hastebin", f'https://hastebin.com/{data["key"]}'
-        except (KeyError, TypeError, TimeoutError):
+        except (KeyError, TypeError, TimeoutError, JSONDecodeError):
             return None, None
 
     async def paste(self) -> Set[Union[str, None]]:

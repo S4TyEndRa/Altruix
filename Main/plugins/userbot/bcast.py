@@ -6,8 +6,6 @@
 #
 # All rights reserved.
 
-
-from sqlalchemy import true
 from Main import Altruix
 from pyrogram import Client
 from Main.core.types.message import Message

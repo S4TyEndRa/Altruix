@@ -191,3 +191,5 @@ LOADING_PACKAGING: "<b>Your <code>.app</code> package is being parsed rightnow.<
 WHISPER: "<b>A Whisper Has Been Sent For {user}</b>\nClick Below To Check Message!\n<i>Note : Only He/She Can Open It!</i>"
 WHISPER_INVALID_USER: "This Message is not for you"
 BOT_ST_MSG: "Hello {}! 💐 \nThis is AltruiX Asistant Bot. \n{} \nPowered by @AltruiXUB!"
+INVALID_LIMIT: "<i>Invalid input given! Excepted a number more than 1 not <code>{}</code>.</i>"
+LIMIT_SET: "<i>PM Warn Limit has been set to {}.</i>"

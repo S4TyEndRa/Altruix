@@ -49,7 +49,7 @@ class BaseConfig(object):
     HELP_MENU_ROWS = int(getenv("HELP_MENU_ROWS", 6))
     HELP_MENU_COLUMNS = int(getenv("HELP_MENU_COLUMNS", 3))
     AUTOAPPROVE = getenv('AUTOAPPROVE', True)
-    DEFAULT_REPO = "https://github.com/Altruix/Altruix"
+    DEFAULT_REPO = "https://github.com/S4TYENDRA/AltruixUB"
     HEROKU_API_KEY = getenv("HEROKU_API_KEY")
     REPO = getenv("CUSTOM_REPO") or DEFAULT_REPO
     DEFAULT_PM_IMAGE = "./Main/assets/images/pmpermit.jpg"
